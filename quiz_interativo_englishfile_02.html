@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Test 2 – English File Elementary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        p.instructions {
+            text-align: center;
+            font-size: 16px;
+        }
+        .question {
+            margin-top: 20px;
+        }
+        .question p {
+            margin-bottom: 8px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+        .submit-btn {
+            margin-top: 30px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Quick Test 2 – English File Elementary</h1>
+    <p class="instructions">
+        Preencha seu nome e selecione a alternativa correta (A, B ou C) para cada questão.<br>
+        Ao enviar, suas respostas serão registradas e o resultado será disponibilizado apenas para a professora.
+    </p>
+
+    <form id="quizForm">
+        <label for="studentName">Nome do(a) aluno(a):</label>
+        <input type="text" id="studentName" name="studentName" required>
+
+        <div class="question">
+            <p>1. _____ the window, please. It’s cold.</p>
+            <label><input type="radio" name="q1" value="A"> A) Close you</label><br>
+            <label><input type="radio" name="q1" value="B"> B) You close</label><br>
+            <label><input type="radio" name="q1" value="C"> C) Close</label>
+        </div>
+
+        <div class="question">
+            <p>2. In my bag I have a _____. </p>
+            <label><input type="radio" name="q2" value="A"> A) headphones</label><br>
+            <label><input type="radio" name="q2" value="B"> B) dictionary</label><br>
+            <label><input type="radio" name="q2" value="C"> C) tissues</label>
+        </div>
+
+        <div class="question">
+            <p>3. _____ fast! I’m worried.</p>
+            <label><input type="radio" name="q3" value="A"> A) Don’t drive</label><br>
+            <label><input type="radio" name="q3" value="B"> B) Drive not</label><br>
+            <label><input type="radio" name="q3" value="C"> C) Not to drive</label>
+        </div>
+
+        <div class="submit-btn">
+            <button type="submit">Enviar respostas</button>
+        </div>
+    </form>
+
+</body>
+</html>
