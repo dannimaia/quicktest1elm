@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Quiz – Quick Test 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .question-block {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .question-block:last-child {
+            border-bottom: none;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .submit-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            color: #2d7a32;
+        }
+        /* Teacher section styling */
+        .teacher-section {
+            margin-top: 40px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #fafafa;
+        }
+        .teacher-section h3 {
+            margin-top: 0;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .results-table th {
+            background-color: #f2f2f2;
+        }
+        /* Details section styling */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .details-table th, .details-table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            font-size: 0.9rem;
+        }
+        .details-table th {
+            background-color: #e9e9e9;
+        }
+        .details-correct {
+            color: #2d7a32;
+            font-weight: bold;
+        }
+        .details-incorrect {
+            color: #c92a2a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Quick Test 1 – English File Elementary</h1>
+        <p>Preencha seu nome e selecione a alternativa correta (A, B ou C) para cada questão. Ao enviar, suas respostas serão registradas e o resultado será disponibilizado apenas para a professora.</p>
+
+        <form id="quizForm">
+            <div style="margin-bottom:15px;">
+                <label for="studentName">Nome do(a) aluno(a):</label><br>
+                <input type="text" id="studentName" name="studentName" required style="width: 100%; padding: 8px; margin-top:4px;">
+            </div>
+            <!-- Questions will be injected here by JavaScript -->
+            <div id="questionsContainer"></div>
+            <button type="submit" class="submit-btn">Enviar respostas</button>
+        </form>
+        <div id="submissionMessage" class="message" style="display:none;"></div>
+
+        <!-- Teacher section -->
+        <div class="teacher-section">
+            <h3>Área da professora</h3>
+            <p>Insira sua senha para visualizar os resultados dos alunos:</p>
+            <input type="password" id="teacherPassword" placeholder="Senha">
+            <button id="showResultsBtn" style="margin-left:10px;">Ver resultados</button>
+            <div id="resultsContainer" style="display:none;"></div>
+            <div id="detailsSection" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Lista de questões com enunciado, opções e resposta correta.
+        // Veja a primeira versão para comentários detalhados
+        const questions = [
+            // Grammar
+            { text: "1. My computer ____ Japanese.", options: ["A it’s", "B are", "C is"], correct: "C" },
+            { text: "2. My name ____ Kristof.", options: ["A am", "B is", "C are"], correct: "B" },
+            { text: "3. They ____ from Argentina. They’re from Spain.", options: ["A not are", "B aren’t", "C isn’t"], correct: "B" },
+            { text: "4. John is the director. That’s ____ room.", options: ["A her", "B his", "C he"], correct: "B" },
+            { text: "5. Frankie and Armando are in Class 7. ____ teacher is Julia.", options: ["A They’re", "B His", "C Their"], correct: "C" },
+            { text: "6. Annie is a student. ____'s in Class 2.", options: ["A He", "B She", "C It"], correct: "B" },
+            { text: "7. My teacher’s Scottish. ____ from Glasgow.", options: ["A He’s", "B It’s", "C He"], correct: "A" },
+            { text: "8. ____ are you from?", options: ["A Where", "B Were", "C How"], correct: "A" },
+            { text: "9. They aren’t French. They ____ Swiss.", options: ["A be", "B ’re", "C is"], correct: "B" },
+            { text: "10. A: What’s ____ name? B: I’m Sophia.", options: ["A your", "B you", "C her"], correct: "A" },
+            { text: "11. A: Are you Chinese? B: ____.", options: ["A Yes, I’m", "B No, I not", "C Yes, I am"], correct: "C" },
+            { text: "12. This is my girlfriend. ____ name is Ferah.", options: ["A Your", "B Her", "C His"], correct: "B" },
+            { text: "13. A: Are they English? B: Yes, they ____.", options: ["A are", "B is", "C ’re"], correct: "A" },
+            { text: "14. Hello. ____’m Sabrina.", options: ["A I", "B Her", "C They"], correct: "A" },
+            { text: "15. How ____ you?", options: ["A be", "B is", "C are"], correct: "C" },
+            { text: "16. Where ____ your parents from?", options: ["A is", "B are", "C they"], correct: "B" },
+            { text: "17. He’s from Egypt. ____ name’s Mahmoud.", options: ["A His", "B He", "C Has"], correct: "A" },
+            { text: "18. We’re new students. ____ names are Maria and Ariel.", options: ["A Ours", "B We", "C Our"], correct: "C" },
+            { text: "19. He ____ in Class 3.", options: ["A are", "B is", "C be"], correct: "B" },
+            { text: "20. ____’s your name?", options: ["A How", "B What", "C Is"], correct: "B" },
+            // Vocabulary & greetings
+            { text: "21. fourteen, ____, twelve, eleven.", options: ["A thirteen", "B ten", "C fifteen"], correct: "A" },
+            { text: "22. Scotland – Scottish; ____ – Hungarian.", options: ["A Hungary", "B Hungaria", "C Hungery"], correct: "A" },
+            { text: "23. Tuesday, ____, Thursday.", options: ["A Friday", "B Monday", "C Wednesday"], correct: "C" },
+            { text: "24. Africa – African; Europe – ____.", options: ["A Europan", "B European", "C Europen"], correct: "B" },
+            { text: "25. one, ____, three, four.", options: ["A zero", "B four", "C two"], correct: "C" },
+            { text: "26. ____. See you on Friday.", options: ["A Hello", "B Bye", "C Hi"], correct: "B" },
+            { text: "27. ____, I’m Rosemary.", options: ["A Hi", "B Bye", "C Please"], correct: "A" },
+            { text: "28. A: I’m Dani. B: Nice to ____ you.", options: ["A meet", "B met", "C seeing"], correct: "A" },
+            { text: "29. A: How are you? B: I’m fine, ____ you.", options: ["A thanks", "B hello", "C thank"], correct: "C" },
+            { text: "30. A ____ are you? B: Fine, thanks.", options: ["A Where", "B How", "C What"], correct: "B" },
+            { text: "31. A: How do you ____ your name? B: R-A-Q-U-E-L.", options: ["A speak", "B spell", "C spelling"], correct: "B" },
+            { text: "32. Turn ____ your mobile phone.", options: ["A open", "B off", "C out"], correct: "B" },
+            { text: "33. ____ at the board, please.", options: ["A Look", "B Listen", "C Go"], correct: "A" },
+            // Communication / functional language
+            { text: "34. See you ____ Monday.", options: ["A in", "B on", "C to"], correct: "B" },
+            { text: "35. Please ____ talking!", options: ["A don’t", "B speak", "C stop"], correct: "C" },
+            { text: "36. Can you open the ____?", options: ["A picture", "B window", "C chair"], correct: "B" },
+            { text: "37. A: What’s the capital of Mexico? B: I don’t ____.", options: ["A know", "B sure", "C think"], correct: "A" },
+            { text: "38. Sit on your ____.", options: ["A chair", "B wall", "C door"], correct: "A" },
+            { text: "39. ____ the text on page 16.", options: ["A Go", "B Listen", "C Read"], correct: "C" },
+            { text: "40. Sorry, ____ repeat that, please?", options: ["A do you", "B are you", "C can you"], correct: "C" },
+            // Pronunciation – different sound
+            { text: "41. Which letter has a different sound?", options: ["A P", "B I", "C T"], correct: "B" },
+            { text: "42. Which word has a different vowel sound?", options: ["A two", "B boot", "C close"], correct: "C" },
+            { text: "43. Which word has a different vowel sound?", options: ["A am", "B thanks", "C car"], correct: "C" },
+            { text: "44. Which word has a different vowel sound?", options: ["A they", "B well", "C very"], correct: "A" },
+            { text: "45. Which letter has a different sound?", options: ["A D", "B J", "C G"], correct: "A" },
+            // Pronunciation – stressed syllable
+            { text: "46. Which pronunciation is correct for ‘Saturday’?", options: ["A SÁturday (1ª sílaba)", "B saTÚRday (2ª sílaba)", "C saturDAY (3ª sílaba)"], correct: "A" },
+            { text: "47. Which pronunciation is correct for ‘Switzerland’?", options: ["A SWITzerland", "B switZERland", "C switzerLAND"], correct: "A" },
+            { text: "48. Which pronunciation is correct for ‘museum’?", options: ["A MUseum", "B muSEum", "C museUM"], correct: "B" },
+            { text: "49. Which pronunciation is correct for ‘Australia’?", options: ["A AUSTRalia", "B ausTRAlia", "C austraLIA"], correct: "B" },
+            { text: "50. Which pronunciation is correct for ‘Japanese’?", options: ["A JApanese", "B jaPAnese", "C japaNESE"], correct: "C" }
+        ];
+
+        // Renderiza as questões dinamicamente
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question-block';
+                const qId = `q${index+1}`;
+
+                const qText = document.createElement('div');
+                qText.className = 'question-text';
+                qText.textContent = q.text;
+                qDiv.appendChild(qText);
+
+                const optsDiv = document.createElement('div');
+                optsDiv.className = 'options';
+                q.options.forEach(opt => {
+                    const label = document.createElement('label');
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = qId;
+                    const letter = opt.trim().charAt(0);
+                    radio.value = letter;
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(' ' + opt));
+                    optsDiv.appendChild(label);
+                });
+                qDiv.appendChild(optsDiv);
+                container.appendChild(qDiv);
+            });
+        }
+
+        // Trata o envio do formulário do aluno
+        function handleSubmit(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('studentName');
+            const studentName = nameInput.value.trim();
+            if (!studentName) {
+                alert('Por favor, insira seu nome.');
+                return;
+            }
+            let score = 0;
+            const answersList = [];
+            questions.forEach((q, idx) => {
+                const qId = `q${idx+1}`;
+                const selected = document.querySelector(`input[name='${qId}']:checked`);
+                const selectedLetter = selected ? selected.value : '';
+                const isCorrect = selectedLetter === q.correct;
+                if (isCorrect) score++;
+                answersList.push({ question: q.text, selected: selectedLetter, correct: q.correct, isCorrect: isCorrect });
+            });
+            // Recupera resultados existentes
+            let stored = [];
+            try {
+                stored = JSON.parse(localStorage.getItem('quizResults')) || [];
+            } catch (e) {
+                stored = [];
+            }
+            stored.push({ name: studentName, score: score, total: questions.length, timestamp: new Date().toISOString(), answers: answersList });
+            localStorage.setItem('quizResults', JSON.stringify(stored));
+            document.getElementById('submissionMessage').textContent = 'Respostas enviadas! Obrigado por participar.';
+            document.getElementById('submissionMessage').style.display = 'block';
+            document.getElementById('quizForm').reset();
+        }
+
+        // Exibe a lista de resultados e adiciona botões para detalhes
+        function showResults() {
+            const password = document.getElementById('teacherPassword').value;
+            const correctPassword = 'prof123';
+            if (password !== correctPassword) {
+                alert('Senha incorreta.');
+                return;
+            }
+            const resultsContainer = document.getElementById('resultsContainer');
+            let stored;
+            try {
+                stored = JSON.parse(localStorage.getItem('quizResults')) || [];
+            } catch (e) {
+                stored = [];
+            }
+            if (stored.length === 0) {
+                resultsContainer.innerHTML = '<p>Nenhum resultado registrado ainda.</p>';
+                document.getElementById('detailsSection').style.display = 'none';
+            } else {
+                let html = '<table class="results-table"><thead><tr><th>Aluno(a)</th><th>Pontuação</th><th>Data/Hora</th><th>Detalhes</th></tr></thead><tbody>';
+                stored.forEach((res, index) => {
+                    const date = new Date(res.timestamp);
+                    html += `<tr><td>${res.name}</td><td>${res.score} / ${res.total}</td><td>${date.toLocaleString('pt-BR')}</td><td><button class="details-btn" data-index="${index}">Ver detalhes</button></td></tr>`;
+                });
+                html += '</tbody></table>';
+                resultsContainer.innerHTML = html;
+                // Após inserir a tabela, adicionar listeners aos botões de detalhes
+                const buttons = resultsContainer.querySelectorAll('.details-btn');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.target.getAttribute('data-index');
+                        showStudentDetails(parseInt(idx, 10));
+                    });
+                });
+            }
+            resultsContainer.style.display = 'block';
+        }
+
+        // Exibe os detalhes das respostas para um aluno específico
+        function showStudentDetails(index) {
+            let stored;
+            try {
+                stored = JSON.parse(localStorage.getItem('quizResults')) || [];
+            } catch (e) {
+                stored = [];
+            }
+            const detailsSection = document.getElementById('detailsSection');
+            if (!stored[index] || !stored[index].answers) {
+                detailsSection.innerHTML = '<p>Detalhes indisponíveis para este aluno.</p>';
+                detailsSection.style.display = 'block';
+                return;
+            }
+            const res = stored[index];
+            let html = `<h4>Detalhes de ${res.name} (Pontuação: ${res.score}/${res.total})</h4>`;
+            html += '<table class="details-table"><thead><tr><th>Nº</th><th>Pergunta</th><th>Selecionado</th><th>Correto</th><th>Resultado</th></tr></thead><tbody>';
+            res.answers.forEach((ans, idx) => {
+                const resultIcon = ans.isCorrect ? '<span class="details-correct">✓</span>' : '<span class="details-incorrect">✗</span>';
+                html += `<tr><td>${idx+1}</td><td>${ans.question}</td><td>${ans.selected || '-'}</td><td>${ans.correct}</td><td>${resultIcon}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            detailsSection.innerHTML = html;
+            detailsSection.style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestions();
+            document.getElementById('quizForm').addEventListener('submit', handleSubmit);
+            document.getElementById('showResultsBtn').addEventListener('click', showResults);
+        });
+    </script>
+</body>
+</html>
