@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Test - English File Elementary (02)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        iframe {
+            width: 100%;
+            height: 800px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>English File Elementary – Quick Test 02</h1>
+    <p>Use os botões abaixo para interagir com o teste. Você pode imprimir, copiar ou fazer o download do arquivo.</p>
+
+    <div class="buttons">
+        <button onclick="window.print()">🖨️ Imprimir</button>
+        <button onclick="copyLink()">🔗 Copiar Link</button>
+        <a href="quiz_englishfile_elementary_02.pdf" download>
+            <button>⬇️ Baixar PDF</button>
+        </a>
+    </div>
+
+    <iframe src="quiz_englishfile_elementary_02.pdf"></iframe>
+
+    <script>
+        function copyLink() {
+            const link = window.location.href;
+            navigator.clipboard.writeText(link);
+            alert("Link copiado com sucesso!");
+        }
+    </script>
+</body>
+</html>
